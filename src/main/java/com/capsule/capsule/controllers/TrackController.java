@@ -1,10 +1,12 @@
 package com.capsule.capsule.controllers;
 
-import com.capsule.capsule.entities.Track;
+import com.capsule.capsule.dtos.request.CreateTrackRequest;
+import com.capsule.capsule.dtos.response.TrackResponse;
 
 import java.util.List;
+import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.capsule.capsule.services.*;
@@ -21,19 +23,17 @@ public class TrackController {
    }
 
    @GetMapping("/all/{id}")
-   public List<Track> listAll(@PathVariable("id") Long userId) {
-      return trackService.listAllUserTracks(userId);
+   public ResponseEntity<List<TrackResponse>> listAll(@PathVariable("id") Long userId) {
+      return ResponseEntity.ok(trackService.listAllUserTracks(userId));
    }
 
    @PostMapping("/create")
-   @ResponseStatus(HttpStatus.CREATED)
-   public Track create(@Valid @RequestBody Track track) {
-      return trackService.createTrack(track);
+   public ResponseEntity<TrackResponse> create(@Valid @RequestBody CreateTrackRequest track) {
+      return ResponseEntity.ok(trackService.createTrack(track));
    }
    
-   // @DeleteMapping("/delete/{id}")
-   // @ResponseStatus(HttpStatus.OK)
-   // public User create(@Valid @PathVariable("id") Long userId) {
-   //    return userService.deleteUserByID(userId);
-   // }
+   @DeleteMapping("/delete/{uuid}")
+   public ResponseEntity<TrackResponse> delete(@Valid @PathVariable("uuid") UUID trackUUID) {
+      return ResponseEntity.ok(trackService.deleteTrack(trackUUID));
+   }
 }

@@ -1,10 +1,11 @@
 package com.capsule.capsule.services;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.capsule.capsule.dtos.request.CreateUserRequest;
+import com.capsule.capsule.dtos.response.UserResponse;
 import com.capsule.capsule.entities.User;
 import com.capsule.capsule.repository.UserRepository;
 
@@ -17,9 +18,20 @@ public class UserService {
       this.repository = repository;
    }
 
-   public User createUser(User user) {
+   public UserResponse createUser(CreateUserRequest request) {
       try {
-         return repository.save(user);
+         User user = new User();
+
+         user.setEmail(request.email());
+         user.setName(request.name());
+         user.setPassword(request.password());
+
+         repository.save(user);
+
+         return new UserResponse(
+               user.getName(),
+               user.getEmail());
+
       } catch (Exception e) {
          throw new RuntimeException("Erro ao criar usuário.", e);
       }
@@ -33,20 +45,29 @@ public class UserService {
       }
    }
 
-   public List<User> listAll() {
+   public List<UserResponse> listAll() {
       try {
-         return repository.findAll();
+         return repository.findAll()
+               .stream()
+               .map(user -> new UserResponse(
+                     user.getName(),
+                     user.getEmail()))
+               .toList();
       } catch (Exception e) {
          throw new RuntimeException("Erro ao listar usuários.", e);
       }
    }
 
-   public User deleteUserByID(Long id) {
+   public UserResponse deleteUserByID(Long id) {
       try {
          User user = repository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
+         UserResponse userDTO = new UserResponse(
+               user.getName(),
+               user.getEmail());
+
          repository.delete(user);
-         return user;
+         return userDTO;
       } catch (Exception e) {
          throw new RuntimeException("Erro ao deletar usuário.", e);
       }

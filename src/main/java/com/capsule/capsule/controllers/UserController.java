@@ -1,10 +1,11 @@
 package com.capsule.capsule.controllers;
 
-import com.capsule.capsule.entities.User;
+import com.capsule.capsule.dtos.request.CreateUserRequest;
+import com.capsule.capsule.dtos.response.UserResponse;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.capsule.capsule.services.*;
@@ -21,19 +22,17 @@ public class UserController {
    }
 
    @GetMapping("/all")
-   public List<User> listAll() {
-      return userService.listAll();
+   public ResponseEntity<List<UserResponse>> listAll() {
+      return ResponseEntity.ok(userService.listAll());
    }
 
    @PostMapping("/create")
-   @ResponseStatus(HttpStatus.CREATED)
-   public User create(@Valid @RequestBody User user) {
-      return userService.createUser(user);
+   public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest user) {
+      return ResponseEntity.ok(userService.createUser(user));
    }
    
    @DeleteMapping("/delete/{id}")
-   @ResponseStatus(HttpStatus.OK)
-   public User create(@Valid @PathVariable("id") Long userId) {
-      return userService.deleteUserByID(userId);
+   public ResponseEntity<UserResponse> create(@Valid @PathVariable("id") Long userId) {
+      return ResponseEntity.ok(userService.deleteUserByID(userId));
    }
 }
