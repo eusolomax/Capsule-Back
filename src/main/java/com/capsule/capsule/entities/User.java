@@ -1,6 +1,7 @@
 package com.capsule.capsule.entities;
 
 import java.util.List;
+import java.util.UUID;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
@@ -20,6 +21,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @Column(nullable = false, unique = true)
+    private UUID uuid = UUID.randomUUID();
 
     @NotBlank(message = "Name cannot be empty")
     @Column(nullable = false)
@@ -33,7 +37,6 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Valid
     @OneToMany(mappedBy = "user")
     private List<Track> tracks;
 }

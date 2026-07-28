@@ -31,7 +31,6 @@ public class Track {
    @Column(name = "track_description")
    private String trackDescription;
 
-   @Valid
    @ManyToOne(fetch = FetchType.LAZY)
    @JoinColumn(name = "user_id")
    private User user;
