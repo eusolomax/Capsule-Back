@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.capsule.capsule.dtos.request.CreateUserRequest;
 import com.capsule.capsule.dtos.response.UserResponse;
 import com.capsule.capsule.entities.User;
 import com.capsule.capsule.mapper.UserMapper;
@@ -19,17 +18,6 @@ public class UserService {
    public UserService(UserRepository repository, UserMapper mapper) {
       this.repository = repository;
       this.mapper = mapper;
-   }
-
-   public UserResponse createUser(CreateUserRequest request) {
-      try {
-         User user = mapper.toEntity(request);
-         repository.save(user);
-
-         return mapper.toResponse(user);
-      } catch (Exception e) {
-         throw new RuntimeException("Erro ao criar usuário.", e);
-      }
    }
 
    public User findById(Long id) {
@@ -55,7 +43,7 @@ public class UserService {
       try {
          User user = repository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
          repository.delete(user);
-         
+
          return mapper.toResponse(user);
       } catch (Exception e) {
          throw new RuntimeException("Erro ao deletar usuário.", e);

@@ -1,6 +1,5 @@
 package com.capsule.capsule.controllers;
 
-import com.capsule.capsule.dtos.request.CreateUserRequest;
 import com.capsule.capsule.dtos.response.UserResponse;
 
 import java.util.List;
@@ -24,11 +23,6 @@ public class UserController {
    @GetMapping("/all")
    public ResponseEntity<List<UserResponse>> listAll() {
       return ResponseEntity.ok(userService.listAll());
-   }
-
-   @PostMapping("/create")
-   public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest user) {
-      return ResponseEntity.ok(userService.createUser(user));
    }
    
    @DeleteMapping("/delete/{id}")

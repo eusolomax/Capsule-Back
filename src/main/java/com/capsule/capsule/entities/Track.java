@@ -3,7 +3,6 @@ package com.capsule.capsule.entities;
 import java.util.UUID;
 
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
