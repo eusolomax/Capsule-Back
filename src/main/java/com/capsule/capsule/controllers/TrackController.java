@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.capsule.capsule.services.*;
@@ -22,9 +23,9 @@ public class TrackController {
       this.trackService = trackService;
    }
 
-   @GetMapping("/all/{id}")
-   public ResponseEntity<List<TrackResponse>> listAll(@PathVariable("id") Long userId) {
-      return ResponseEntity.ok(trackService.listAllUserTracks(userId));
+   @GetMapping("/all")
+   public ResponseEntity<List<TrackResponse>> listAll(Authentication authentication) {
+      return ResponseEntity.ok(trackService.listAllUserTracks(authentication.getPrincipal().toString()));
    }
 
    @PostMapping("/create")

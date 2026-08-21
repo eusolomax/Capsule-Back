@@ -3,6 +3,7 @@ package com.capsule.capsule.infra.security;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class TokenService {
       try {
          return JWT.create()
                .withIssuer("capsule-api")
-               .withSubject(user.getEmail())
+               .withSubject(user.getUuid().toString())
                .withExpiresAt(genExpirationDate())
                .sign(this.algorithm);
 

@@ -11,5 +11,7 @@ import com.capsule.capsule.entities.Track;
 public interface TrackRepository extends JpaRepository<Track, Long> {
    List<Track> findByUserId(Long userId);
    
+   List<Track> findByUserUuid(UUID userUUID);
+
    Optional<Track> findByUuid(UUID uuid);
 }

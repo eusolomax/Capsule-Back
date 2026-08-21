@@ -44,9 +44,11 @@ public class TrackService {
       }
    }
 
-   public List<TrackResponse> listAllUserTracks(Long userId) {
+   
+   public List<TrackResponse> listAllUserTracks(String userUUID) {
+      
       try {
-         return repository.findByUserId(userId)
+         return repository.findByUserUuid(UUID.fromString(userUUID))
                .stream()
                .map(mapper::toResponse)
                .toList();
