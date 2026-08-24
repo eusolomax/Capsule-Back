@@ -25,9 +25,8 @@ public class TrackService {
       this.mapper = mapper;
    }
 
-   public TrackResponse createTrack(CreateTrackRequest request) {
-      // Pegar com token JWT
-      User user = userService.findById(1L);
+   public TrackResponse createTrack(CreateTrackRequest request, String userUUID) {
+      User user = userService.findByUuid(userUUID);
 
       Track track = mapper.toEntity(request);
 

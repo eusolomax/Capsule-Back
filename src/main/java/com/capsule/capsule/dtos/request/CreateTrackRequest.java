@@ -7,4 +7,7 @@ public record CreateTrackRequest(
     String trackName,
     
     String trackDescription
+    
+    // TODO -- Let user create the REAL track
+    // Add parameters like: track file, duration calc... (to finally not mock it all)
 ) {}

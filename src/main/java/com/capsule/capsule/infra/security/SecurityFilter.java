@@ -3,9 +3,11 @@ package com.capsule.capsule.infra.security;
 import java.io.IOException;
 import java.util.UUID;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -29,29 +31,36 @@ public class SecurityFilter extends OncePerRequestFilter {
 
    @Override
    protected void doFilterInternal(
-         HttpServletRequest request,
-         HttpServletResponse response,
-         FilterChain filterChain)
-         throws ServletException, IOException {
+           HttpServletRequest request,
+           HttpServletResponse response,
+           FilterChain filterChain)
+           throws ServletException, IOException {
 
       var token = recoverToken(request);
 
       if (token != null) {
-         String uuid = tokenService.validateToken(token);
+         String uuid;
 
-         UserDetails user = userRepository.findByUuid(UUID.fromString(uuid));
+         try {
+            uuid = tokenService.validateToken(token);
+         } catch (JWTVerificationException e) {
+            throw new RuntimeException(e);
+         }
+
+         UserDetails user = userRepository.findByUuid(UUID.fromString(uuid)).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado."));
 
          var authentication = new UsernamePasswordAuthenticationToken(
-               uuid.toString(),
-               null,
-               user.getAuthorities());
+                 uuid,
+                 null,
+                 user.getAuthorities());
 
          SecurityContextHolder
-               .getContext()
-               .setAuthentication(authentication);
+                 .getContext()
+                 .setAuthentication(authentication);
       }
 
       filterChain.doFilter(request, response);
+
    }
 
    private String recoverToken(HttpServletRequest request) {

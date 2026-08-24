@@ -25,25 +25,25 @@ public class TokenService {
    public String generateToken(User user) {
       try {
          return JWT.create()
-               .withIssuer("capsule-api")
-               .withSubject(user.getUuid().toString())
-               .withExpiresAt(genExpirationDate())
-               .sign(this.algorithm);
+                 .withIssuer("capsule-api")
+                 .withSubject(user.getUuid().toString())
+                 .withExpiresAt(genExpirationDate())
+                 .sign(this.algorithm);
 
       } catch (JWTCreationException e) {
          throw new RuntimeException(e);
       }
    }
 
-   public String validateToken(String token) {
+   public String validateToken(String token) throws JWTVerificationException {
       try {
          return JWT.require(this.algorithm)
-               .withIssuer("capsule-api")
-               .build()
-               .verify(token)
-               .getSubject();
+                 .withIssuer("capsule-api")
+                 .build()
+                 .verify(token)
+                 .getSubject();
       } catch (JWTVerificationException e) {
-         return null;
+         throw new JWTVerificationException("Token inválido.", e);
       }
    }
 

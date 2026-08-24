@@ -1,6 +1,7 @@
 package com.capsule.capsule.services;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -21,32 +22,33 @@ public class UserService {
    }
 
    public User findById(Long id) {
-      try {
-         return repository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
-      } catch (Exception e) {
-         throw new RuntimeException("Erro ao listar usuário.", e);
-      }
+      return (User) repository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+   }
+
+   public User findByUuid(String uuid) {
+      return (User) repository.findByUuid(UUID.fromString(uuid)).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
    }
 
    public List<UserResponse> listAll() {
       try {
          return repository.findAll()
-               .stream()
-               .map(mapper::toResponse)
-               .toList();
+                 .stream()
+                 .map(mapper::toResponse)
+                 .toList();
       } catch (Exception e) {
          throw new RuntimeException("Erro ao listar usuários.", e);
       }
    }
 
    public UserResponse deleteUserByID(Long id) {
-      try {
-         User user = repository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
-         repository.delete(user);
+      User user = repository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
-         return mapper.toResponse(user);
+      try {
+         repository.delete(user);
       } catch (Exception e) {
          throw new RuntimeException("Erro ao deletar usuário.", e);
       }
+      
+      return mapper.toResponse(user);
    }
 }

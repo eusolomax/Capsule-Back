@@ -29,8 +29,8 @@ public class TrackController {
    }
 
    @PostMapping("/create")
-   public ResponseEntity<TrackResponse> create(@Valid @RequestBody CreateTrackRequest track) {
-      return ResponseEntity.ok(trackService.createTrack(track));
+   public ResponseEntity<TrackResponse> create(@Valid @RequestBody CreateTrackRequest track, Authentication authentication) {
+      return ResponseEntity.ok(trackService.createTrack(track, authentication.getPrincipal().toString()));
    }
    
    @DeleteMapping("/delete/{uuid}")
