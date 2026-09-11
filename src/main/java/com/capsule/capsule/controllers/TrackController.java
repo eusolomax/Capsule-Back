@@ -5,6 +5,7 @@ import com.capsule.capsule.dtos.response.TrackResponse;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -27,13 +28,14 @@ public class TrackController {
 
    @GetMapping("/all")
    public ResponseEntity<List<TrackResponse>> listAll(Authentication authentication) {
-      return ResponseEntity.ok(trackService.listAllUserTracks(authentication.getPrincipal().toString()));
+      return ResponseEntity.ok(
+              trackService.listAllUserTracks(
+                      UUID.fromString(
+                              (String) Objects.requireNonNull(authentication.getPrincipal())
+                      )
+              )
+      );
    }
-
-//   @PostMapping("/create")
-//   public ResponseEntity<TrackResponse> create(@Valid @RequestBody CreateTrackRequest track, Authentication authentication) {
-//      return ResponseEntity.ok(trackService.createTrack(track, authentication.getPrincipal().toString()));
-//   }
 
    @PostMapping("/create")
    public ResponseEntity<TrackResponse> create(
@@ -42,7 +44,18 @@ public class TrackController {
            @RequestParam("file") MultipartFile file,
            Authentication authentication
    ) {
-      return ResponseEntity.ok(trackService.createTrack(new CreateTrackRequest(trackName, trackDescription, file), authentication.getPrincipal().toString()));
+      return ResponseEntity.ok(
+              trackService.createTrack(
+                      new CreateTrackRequest(
+                              trackName,
+                              trackDescription,
+                              file
+                      ),
+                      UUID.fromString(
+                              (String) Objects.requireNonNull(authentication.getPrincipal())
+                      )
+              )
+      );
    }
 
    @DeleteMapping("/delete/{uuid}")

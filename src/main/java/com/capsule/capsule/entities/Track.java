@@ -2,8 +2,9 @@ package com.capsule.capsule.entities;
 
 import java.util.UUID;
 
+import com.capsule.capsule.enums.AudioFormat;
+import com.capsule.capsule.enums.ProcessingStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "tracks")
 public class Track {
-
    public Track() {
    }
 
@@ -23,7 +23,6 @@ public class Track {
    @Column(nullable = false, unique = true)
    private UUID uuid = UUID.randomUUID();
 
-   @NotBlank(message = "Track name cannot be empty")
    @Column(name = "track_name", nullable = false)
    private String trackName;
 
@@ -31,12 +30,24 @@ public class Track {
    private String trackDescription;
 
    @ManyToOne(fetch = FetchType.LAZY)
-   @JoinColumn(name = "user_id")
+   @JoinColumn(name = "user_id", nullable = false)
    private User user;
 
-   @Column(name = "duration_seconds")
+   @Column(name = "duration_seconds", nullable = false)
    private Integer durationSeconds;
 
-   @Column(name = "file_path")
+   @Column(name = "file_path", nullable = false, unique = true)
    private String filePath;
+
+   @Enumerated(EnumType.STRING)
+   @Column(name = "status", nullable = false)
+   private ProcessingStatus status;
+
+   @Enumerated(EnumType.STRING)
+   @Column(name = "format", nullable = false)
+   private AudioFormat format;
+
+   @ManyToOne(fetch = FetchType.LAZY)
+   @JoinColumn(name = "converted_from")
+   private Track convertedFrom;
 }

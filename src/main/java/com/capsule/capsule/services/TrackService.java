@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import com.capsule.capsule.enums.ProcessingStatus;
 import com.capsule.capsule.events.CheckStorageFolder;
 import com.mpatric.mp3agic.Mp3File;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,8 @@ import com.capsule.capsule.entities.Track;
 import com.capsule.capsule.entities.User;
 import com.capsule.capsule.mapper.TrackMapper;
 import com.capsule.capsule.repository.TrackRepository;
+import com.capsule.capsule.enums.AudioFormat;
 
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
@@ -36,13 +37,13 @@ public class TrackService {
       this.checkStorageFolder = checkStorageFolder;
    }
 
-   public TrackResponse createTrack(CreateTrackRequest request, String userUUID) {
+   public TrackResponse createTrack(CreateTrackRequest request, UUID userUUID) {
       User user = userService.findByUuid(userUUID);
       Track track = mapper.toEntity(request);
       Path storagePath = checkStorageFolder.path;
-      String fileFormat = Objects.equals(request.file().getContentType(), "audio/wav") ? "wav" : "mp3";
+      AudioFormat fileFormat = Objects.equals(request.file().getContentType(), "audio/wav") ? AudioFormat.WAV : AudioFormat.MP3;
 
-      Path filePath = Path.of(storagePath.toString() + "/" + track.getUuid().toString() + "." + fileFormat);
+      Path filePath = Path.of(storagePath.toString() + "/" + track.getUuid().toString() + "." + fileFormat.toString().toLowerCase());
 
       try {
          request.file().transferTo(filePath);
@@ -59,6 +60,8 @@ public class TrackService {
       }
 
       track.setUser(user);
+      track.setFormat(fileFormat);
+      track.setStatus(ProcessingStatus.FINISHED);
 
       try {
          repository.save(track);
@@ -69,8 +72,10 @@ public class TrackService {
       }
    }
 
-   private int getAudioDuration(Path path, String fileFormat) throws Exception {
-      return switch (fileFormat.toLowerCase()) {
+   private int getAudioDuration(Path path, AudioFormat fileFormat) throws Exception {
+      String audioFormat = fileFormat.toString().toLowerCase();
+
+      return switch (audioFormat) {
          case "mp3" -> {
             Mp3File mp3File = new Mp3File(path.toFile());
             yield (int) mp3File.getLengthInSeconds();
@@ -78,21 +83,21 @@ public class TrackService {
 
          case "wav" -> {
             try (AudioInputStream audio = AudioSystem.getAudioInputStream(path.toFile())) {
-               AudioFormat format = audio.getFormat();
+               javax.sound.sampled.AudioFormat format = audio.getFormat();
                yield (int) (audio.getFrameLength() / format.getFrameRate());
             }
          }
 
          default -> throw new IllegalArgumentException(
-                 "Formato de áudio não suportado: " + fileFormat
+                 "Formato de áudio não suportado: " + audioFormat
          );
       };
    }
 
-   public List<TrackResponse> listAllUserTracks(String userUUID) {
+   public List<TrackResponse> listAllUserTracks(UUID userUUID) {
 
       try {
-         return repository.findByUserUuid(UUID.fromString(userUUID))
+         return repository.findByUserUuid((userUUID))
                  .stream()
                  .map(mapper::toResponse)
                  .toList();
@@ -104,7 +109,7 @@ public class TrackService {
    public TrackResponse deleteTrack(UUID trackUUID) {
       try {
          Track trackFound = repository.findByUuid(trackUUID).orElseThrow(() -> new RuntimeException("Track não encontrada."));
-         
+
          TrackResponse track = mapper.toResponse(trackFound);
 
          repository.delete(trackFound);
