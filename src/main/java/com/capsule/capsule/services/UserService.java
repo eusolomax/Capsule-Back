@@ -22,11 +22,11 @@ public class UserService {
    }
 
    public User findById(Long id) {
-      return (User) repository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+      return repository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
    }
 
-   public User findByUuid(String uuid) {
-      return (User) repository.findByUuid(UUID.fromString(uuid)).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+   public User findByUuid(UUID uuid) {
+      return repository.findByUuid(uuid).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
    }
 
    public List<UserResponse> listAll() {
@@ -40,7 +40,7 @@ public class UserService {
       }
    }
 
-   public UserResponse deleteUserByID(Long id) {
+   public User deleteUserByID(Long id) {
       User user = repository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
       try {
@@ -48,7 +48,7 @@ public class UserService {
       } catch (Exception e) {
          throw new RuntimeException("Erro ao deletar usuário.", e);
       }
-      
-      return mapper.toResponse(user);
+
+      return user;
    }
 }

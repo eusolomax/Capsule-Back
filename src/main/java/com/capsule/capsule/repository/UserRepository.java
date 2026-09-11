@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.capsule.capsule.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-   Optional<UserDetails> findByEmail(String email);
-    
-   Optional<UserDetails> findByUuid(UUID uuid);
+   Optional<User> findByEmail(String email);
+
+   Optional<User> findByUuid(UUID uuid);
 }
